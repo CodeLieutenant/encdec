@@ -1,0 +1,24 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "libsodium:PIE=False\nlibsodium:shared=False\nlibsodium:use_soname=True",
+    "requires": [
+     "1"
+    ],
+    "path": "conanfile.txt",
+    "context": "host"
+   },
+   "1": {
+    "ref": "libsodium/1.0.18",
+    "options": "PIE=False\nshared=False\nuse_soname=True",
+    "package_id": "c24028eb2186bbf239014a660463377b0562930e",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.version=9.3\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n"
+}

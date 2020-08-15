@@ -1,0 +1,11 @@
+conanbuildinfo.txt
+conaninfo.txt
+conanbuildinfo.cmake
+cmake-build-debug/
+cmake-build-release/
+build/
+.vscode/
+.idea/
+*.make
+Makefile
+graph_info.json

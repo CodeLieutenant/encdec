@@ -1,0 +1,5 @@
+[requires]
+libsodium/1.0.18
+
+[generators]
+premake
