@@ -1,7 +1,16 @@
 #include <stdio.h>
+#include "../../include/hrtime.h"
 #include <sodium.h>
 
-int main() {
-    printf("Hello, World!\n");
-    return 0;
+int
+main()
+{
+  uint64_t start = hrtime();
+  for (int i = 0; i < 10000; i++) {
+  }
+
+  uint64_t end = hrtime() - start;
+  printf("Hello, World! %ld\n", start);
+
+  return 0;
 }

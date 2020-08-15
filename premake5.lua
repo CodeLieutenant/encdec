@@ -1,9 +1,9 @@
 
 include("conanbuildinfo.premake.lua")
 
-workspace("EncDec")
+workspace "EncDec"
     conan_basic_setup()
-    platforms { "Win64" }
+    platforms { "Win64", "Linux" }
     configurations { "Debug", "Release" }
 
     filter { "platforms:Win64" }
@@ -17,7 +17,7 @@ workspace("EncDec")
 
         linkoptions { conan_exelinkflags }
 
-        files { "include/**.h",  "src/encrypt/**.h", "src/encrypt/**.c" }
+        files { "include/**.h", "libs/**.c",  "src/encrypt/**.h", "src/encrypt/**.c" }
 
         filter "configurations:Debug"
         defines { "DEBUG" }
@@ -34,7 +34,7 @@ workspace("EncDec")
 
         linkoptions { conan_exelinkflags }
 
-        files { "include/**.h", "src/decrypt/**.h", "src/decrypt/**.c" }
+        files { "include/**.h", "libs/**.c", "src/decrypt/**.h", "src/decrypt/**.c" }
 
         filter "configurations:Debug"
         defines { "DEBUG" }

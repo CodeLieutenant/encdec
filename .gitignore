@@ -1,6 +1,7 @@
 conanbuildinfo.txt
 conaninfo.txt
 conanbuildinfo.cmake
+conanbuildinfo.premake.lua
 cmake-build-debug/
 cmake-build-release/
 build/
@@ -9,3 +10,5 @@ build/
 *.make
 Makefile
 graph_info.json
+obj/
+bin/
