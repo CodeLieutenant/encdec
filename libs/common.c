@@ -12,7 +12,7 @@ bin2hex(char* dst, uint32_t dst_len, const byte const* src, uint32_t src_len)
 {
   int32_t i, j;
 
-  if (BIN2HEX_OUTPUT_BUFFER_LENGTH(src_len) != dst_len) {
+  if (BIN2HEX_OUTPUT_BUFFER_LENGTH(src_len) > dst_len) {
     return ERROR_NOT_ENOUGH_BYTES;
   }
 
@@ -67,13 +67,13 @@ hex2bin(char* dst, uint32_t dst_len, const byte const* src, uint32_t src_len)
 int
 hexdump(FILE* output, const char* const hex)
 {
-#define LINE_LENGTH 256
+#define LINE_LENGTH 70
   uint32_t i, count;
   char buffer[LINE_LENGTH];
   const char* hex_copy = hex;
   memset(buffer, 0, LINE_LENGTH);
   for (i = 0, count = 0; *hex_copy != 0; count++) {
-    if (i == LINE_LENGTH) {
+    if (i >= LINE_LENGTH) {
       fprintf(output, "%s\n", buffer);
       memset(buffer, 0, LINE_LENGTH);
       fflush(output);

@@ -122,6 +122,7 @@ encrypt_file_password(const char const* file,
     return ERROR_XCHACHA20_ENCRYPTION;
   }
 
+  fflush(out_file_p);
   fclose(in_file);
   fclose(out_file_p);
   return ENCDEC_SUCCESS;
