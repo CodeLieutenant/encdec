@@ -1,8 +1,13 @@
+/**
+ * The inspiration for this function is taken from PHP source code
+ * https://github.com/php/php-src/blob/master/ext/standard/hrtime.c
+ */
 #include "../include/hrtime.h"
 #include "../include/common.h"
 
 #ifdef ENCDEC_PLATFORM_WINDOWS
 #include <windows.h>
+#include <profileapi.h>
 #elif ENCDEC_PLATFORM_LINUX
 #include <unistd.h>
 #include <time.h>
@@ -15,7 +20,7 @@ hrtime()
 #ifdef ENCDEC_PLATFORM_WINDOWS
   LARGE_INTEGER lt = { 0 };
   if (!QueryPerformanceFrequency(&lt) || 0 == lt.QuadPart) {
-    return -1;
+    return 0;
   }
   double time_scale = (double)NANO_IN_SEC / (uint64_t)lt.QuadPart;
 
