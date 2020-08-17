@@ -1,9 +1,9 @@
+#include <stdint.h>
+
 /*
  * High resolution timing API
  */
 #ifndef ENCDEC_HRTIME
-
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"

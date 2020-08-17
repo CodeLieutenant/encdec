@@ -127,3 +127,26 @@ basename(char* out, uint32_t out_len, const char* const path)
   }
   strncpy(out, s + 1, out_len);
 }
+
+int32_t
+stricmp(const char* p1, const char* p2)
+{
+  const byte* s1 = (const byte*)p1;
+  const byte* s2 = (const byte*)p2;
+  byte c1, c2;
+  do {
+    c1 = *s1++;
+    c2 = *s2++;
+
+    if (c1 > 64 && c1 < 91) {
+      c1 += 32;
+    }
+    if (c2 > 64 && c2 < 91) {
+      c2 += 32;
+    }
+
+    if (c1 == '\0')
+      return c1 - c2;
+  } while (c1 == c2);
+  return c1 - c2;
+}

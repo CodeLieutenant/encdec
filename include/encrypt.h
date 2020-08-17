@@ -1,9 +1,9 @@
+#include <stdint.h>
+
 /*
  * High resolution timing API
  */
 #ifndef ENCDEC_ENCRYPT
-
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"

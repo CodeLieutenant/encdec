@@ -1,9 +1,10 @@
-#ifndef ENCDEC_COMMON
-
 #include <stdint.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <sodium/crypto_secretstream_xchacha20poly1305.h>
+
+#ifndef ENCDEC_COMMON
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -58,6 +59,8 @@ extern "C"
                               byte* out_salt,
                               const char* const password);
   void basename(char* out, uint32_t out_len, const char* const path);
+
+  int32_t stricmp(const char* p1, const char* p2);
 #ifdef __cplusplus
 }
 #endif

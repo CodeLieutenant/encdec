@@ -2,6 +2,7 @@
  * The inspiration for this function is taken from PHP source code
  * https://github.com/php/php-src/blob/master/ext/standard/hrtime.c
  */
+#include <time.h>
 #include "../include/hrtime.h"
 #include "../include/common.h"
 
@@ -27,9 +28,10 @@ hrtime()
   return (uint64_t)((uint64_t)lt.QuadPart * time_scale);
 #elif ENCDEC_PLATFORM_LINUX
 #if !_POSIX_MONOTONIC_CLOCK
-#ifdef _SC_MONOTONIC_CLOCK
-  return sysconf(_SC_MONOTONIC_CLOCK);
-#endif
+  struct timespec spec;
+  clock_gettime(CLOCK_MONOTONIC, &spec);
+
+  return (uint64_t)spec.tv_nsec;
 #endif
 #endif
   return 0;
