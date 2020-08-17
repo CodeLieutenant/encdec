@@ -50,7 +50,7 @@ encrypt(state* st,
     return ERROR_XCHACHA20_ENCRYPTION;
   }
   fwrite(out, sizeof(byte), (size_t)out_len, out_file);
-
+  fflush(out_file);
   return status;
 }
 
@@ -67,12 +67,15 @@ decrypt(state* st,
   uint8_t t;
   unsigned long long out_len;
   status = crypto_secretstream_xchacha20poly1305_pull(
-    st, out, &out_len, &t, out, read, NULL, 0);
+    st, out, &out_len, &t, buffer, read, NULL, 0);
   if (0 != status) {
-    return ERROR_XCHACHA20_ENCRYPTION;
+    log_debug("Decryption failed, stream cipher failed, %d: INVALID HEADER",
+              status);
+    return ERROR_XCHACHA20_DECRYPTION;
   }
 
   if (t == crypto_secretstream_xchacha20poly1305_TAG_FINAL && !is_eof) {
+    log_debug("Decryption failed, end of file not reached");
     return ERROR_PREMATURE_ENDING;
   }
 
@@ -105,7 +108,7 @@ init(state* st,
     return ERROR_FILE_OPEN;
   }
   status = sodium_init();
-  if (0 != status) {
+  if (-1 == status) {
     log_debug("Error while setting up libsodium");
     return status;
   }
@@ -121,9 +124,16 @@ init(state* st,
     log_debug("Error while encrypting");
     return ERROR_XCHACHA20_INVALID_HEADER;
   }
+#ifdef DEBUG
+  size_t len = sizeof(header) * 2 + 1;
+  char dest[49];
+  bin2hex(dest, len, header, sizeof(header));
+#endif
+
   // Metadata
   fwrite(salt, sizeof(char), FILE_SALT_BYTES_LENGTH, *out_file_p);
   fwrite(header, 1, sizeof header, *out_file_p);
+  fflush(*out_file_p);
   return status;
 }
 
@@ -140,7 +150,7 @@ encrypt_file_password(const char* const file,
   generate_salt(salt);
   status = init(&st, &in_file, &out_file_p, salt, passphrase, file, out_file);
 
-  if (status != 0) {
+  if (0 != status) {
     return status;
   }
 
@@ -184,8 +194,13 @@ decrytpt_file_password(const char* const file,
   fread(salt, sizeof(byte), sizeof(salt), in_file);
   fread(header, sizeof(byte), sizeof(header), in_file);
 
+#ifdef DEBUG
+  size_t len = sizeof(header) * 2 + 1;
+  char dest[49];
+  bin2hex(dest, len, header, sizeof(header));
+#endif
   status = sodium_init();
-  if (0 != status) {
+  if (-1 == status) {
     log_debug("Error while setting up libsodium");
     return status;
   }
