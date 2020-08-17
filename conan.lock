@@ -2,7 +2,7 @@
  "graph_lock": {
   "nodes": {
    "0": {
-    "options": "libsodium:PIE=False\nlibsodium:fPIC=True\nlibsodium:shared=False\nlibsodium:use_soname=True",
+    "options": "libsodium:PIE=False\nlibsodium:shared=False\nlibsodium:use_soname=True",
     "requires": [
      "1"
     ],
@@ -11,8 +11,8 @@
    },
    "1": {
     "ref": "libsodium/1.0.18",
-    "options": "PIE=False\nfPIC=True\nshared=False\nuse_soname=True",
-    "package_id": "090017fccd7b493020671020e5964801d6ba8054",
+    "options": "PIE=False\nshared=False\nuse_soname=True",
+    "package_id": "4dbd0a60aaf2d6d9a1a630239ee8efd3c98614b7",
     "prev": "0",
     "context": "host"
    }
@@ -20,5 +20,5 @@
   "revisions_enabled": false
  },
  "version": "0.4",
- "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.libcxx=libstdc++\ncompiler.version=9\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n"
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=Visual Studio\ncompiler.runtime=MD\ncompiler.version=15\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\n"
 }

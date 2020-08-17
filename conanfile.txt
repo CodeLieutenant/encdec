@@ -3,3 +3,4 @@ libsodium/1.0.18
 
 [generators]
 premake
+visual_studio

@@ -12,3 +12,9 @@ Makefile
 graph_info.json
 obj/
 bin/
+conanbuildinfo.props
+encdec.vcxproj
+EncDec.sln
+encdec.vcxproj.filters
+encdec.vcxproj.user
+.vs/

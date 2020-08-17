@@ -18,14 +18,24 @@
 uint64_t
 hrtime()
 {
+
 #ifdef ENCDEC_PLATFORM_WINDOWS
-  LARGE_INTEGER lt = { 0 };
-  if (!QueryPerformanceFrequency(&lt) || 0 == lt.QuadPart) {
+  LARGE_INTEGER performanceCounter = { 0 };
+  LARGE_INTEGER performanceFrequency = { 0 };
+
+
+  if (!QueryPerformanceCounter(&performanceCounter) || 0 == performanceCounter.QuadPart) {
     return 0;
   }
-  double time_scale = (double)NANO_IN_SEC / (uint64_t)lt.QuadPart;
 
-  return (uint64_t)((uint64_t)lt.QuadPart * time_scale);
+  if (!QueryPerformanceFrequency(&performanceFrequency) || 0 == performanceFrequency.QuadPart) {
+      return 0;
+  }
+
+  double time_scale = (double)performanceCounter.QuadPart / (double)performanceFrequency.QuadPart;
+
+  uint64_t time =  (NANO_IN_SEC * time_scale);
+  return time;
 #elif ENCDEC_PLATFORM_LINUX
 #if !_POSIX_MONOTONIC_CLOCK
   struct timespec spec;

@@ -10,13 +10,14 @@ extern "C"
 {
 #endif
 #define ENCDEC_COMMON
-#ifdef __WIN32
+#if defined(__WIN32) || defined(_WIN32 ) || defined(_WIN64)
 #define DIRECTORY_SEPARATOR '\\'
 #define ENCDEC_PLATFORM_WINDOWS 1
 #elif __linux__
 #define DIRECTORY_SEPARATOR '/'
 #define ENCDEC_PLATFORM_LINUX 1
 #endif
+
 
 #define FILE_SALT_BYTES_START 0
 #define FILE_SALT_BYTES_LENGTH crypto_pwhash_SALTBYTES
@@ -60,7 +61,9 @@ extern "C"
                               const char* const password);
   void basename(char* out, uint32_t out_len, const char* const path);
 
+#ifndef _MSC_VER
   int32_t stricmp(const char* p1, const char* p2);
+#endif
 #ifdef __cplusplus
 }
 #endif

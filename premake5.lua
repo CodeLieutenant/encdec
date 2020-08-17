@@ -17,7 +17,6 @@ workspace "EncDec"
         targetdir "bin/%{cfg.buildcfg}"
 
         linkoptions { conan_exelinkflags }
-        links {"m"}
 
         files { "include/**.h", "libs/**.c",  "src/encrypt/**.h", "src/encrypt/**.c" }
 
@@ -29,3 +28,5 @@ workspace "EncDec"
         filter "configurations:Release"
             defines { "RELEASE", "LOG_USE_COLOR" }
             optimize "On"
+        filter { "platforms:Linux"}
+            links {"m"}
