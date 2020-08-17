@@ -76,8 +76,8 @@ main(int32_t argc, char* argv[])
   void* argtable[] = {
     help = arg_litn("h", "help", 0, 1, "display this help and exit"),
     version = arg_litn("v", "version", 0, 1, "display version info and exit"),
-    hex = arg_litn(NULL, "dump", 0, 1, "Dump decrypted file as hex"),
-    ascii = arg_litn(NULL, "print", 0, 1, "Dump decrypted file as ascii text"),
+    hex = arg_litn(NULL, "hex", 0, 1, "Dump decrypted file as hex"),
+    ascii = arg_litn(NULL, "ascii", 0, 1, "Dump decrypted file as ascii text"),
     type = arg_str1(NULL, NULL, "<str>", "Encrypt or Decrypt"),
     password =
       arg_str1("p", "password", "<password>", "Password to encrypt all files"),
