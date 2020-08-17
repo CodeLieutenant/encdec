@@ -20,7 +20,7 @@ struct arg_file *o, *file;
 struct arg_str *type, *log_level, *password;
 struct arg_end* end;
 
-int32_t
+static int32_t
 print_usage(void** argtable)
 {
   printf("Usage: %s", NAME);
@@ -30,14 +30,14 @@ print_usage(void** argtable)
   return 0;
 }
 
-int32_t
+static int32_t
 print_version()
 {
   printf("Version: %d.%d\n", VERSION_MAJOR, VERSION_MINOR);
   return 0;
 }
 
-int32_t
+static int32_t
 print_error()
 {
   arg_print_errors(stdout, end, NAME);
@@ -45,7 +45,7 @@ print_error()
   return 1;
 }
 
-void
+static void
 set_log_level()
 {
   const char* log;
