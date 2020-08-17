@@ -147,10 +147,15 @@ main(int32_t argc, char* argv[])
 
     decrypt(
       file->filename, file->count, o->filename, password->sval[0], output);
+    log_debug("File decryption done");
   } else if (stricmp(type->sval[0], "hexdump") == 0) {
     printf("HexDUMP file\n");
   }
 exit:
+  if (0 != status) {
+      log_error("Error %d", status);
+  }
+
   arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
   log_info("Total execution time: %ld ns", hrtime() - start);
   return status;
