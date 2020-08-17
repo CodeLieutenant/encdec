@@ -30,9 +30,11 @@ decrypt(const char* input_files[],
         output o)
 {
   int32_t status = 0;
-  uint64_t start, diff, sum = 0;
+  uint64_t start, diff, sum = 0, memory_start, memory_diff, memory_sum = 0;
+  double memory_avg;
 
   for (int32_t i = 0; i < input_files_len; i++) {
+    memory_start = memory_usage();
     start = hrtime();
     status =
       decrypt_file_password(input_files[i], output_files[i], password, o);
@@ -41,11 +43,15 @@ decrypt(const char* input_files[],
       return status;
     }
     diff = hrtime() - start;
-    log_info("Decrypting file: %s took %ld ns", input_files[i], diff);
+    memory_diff = memory_usage() - start;
+    log_info("Decrypting file: %s took %llu ns and %llu Bytes", diff, memory_diff);
     sum += diff;
+    memory_sum += memory_diff;
   }
 
-  log_info("Average decryption time: %ld ns", sum / (uint64_t)input_files_len);
+  log_info("Average decryption time: %llu ns", sum / (uint64_t)input_files_len);
+  memory_avg = (double)memory_sum / (double)input_files_len;
+  log_info("Average memory usage for decryption: %llu Bytes (%lf MiB)", memory_avg, (double)memory_avg / MIBI_BYTE);
 
   return status;
 }

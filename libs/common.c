@@ -118,17 +118,6 @@ password_derivation(byte* out, byte* out_salt, const char* const password)
                        crypto_pwhash_ALG_DEFAULT);
 }
 
-void
-basename(char* out, uint32_t out_len, const char* const path)
-{
-  char* s = strrchr(path, DIRECTORY_SEPARATOR);
-  if (!s) {
-    strncpy(out, path, out_len);
-  }
-
-  strncpy(out, s + 1, out_len);
-}
-
 #ifndef _MSC_VER
 int32_t
 stricmp(const char* p1, const char* p2)

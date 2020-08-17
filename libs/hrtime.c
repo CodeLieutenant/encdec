@@ -9,6 +9,7 @@
 #ifdef ENCDEC_PLATFORM_WINDOWS
 #include <windows.h>
 #include <profileapi.h>
+#include <Psapi.h>
 #elif ENCDEC_PLATFORM_LINUX
 #include <unistd.h>
 #include <time.h>
@@ -50,5 +51,11 @@ hrtime()
 uint64_t
 memory_usage()
 {
+#ifdef ENCDEC_PLATFORM_WINDOWS
+    PROCESS_MEMORY_COUNTERS mem = { 0 };
+    GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+    return mem.PeakWorkingSetSize;
+#endif
+
   return 0;
 }

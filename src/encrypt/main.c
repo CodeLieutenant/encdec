@@ -72,6 +72,8 @@ set_log_level()
 int
 main(int32_t argc, char* argv[])
 {
+  uint64_t memory = memory_usage();
+  uint64_t memory_end;
   uint64_t start = hrtime();
   void* argtable[] = {
     help = arg_litn("h", "help", 0, 1, "display this help and exit"),
@@ -157,6 +159,14 @@ exit:
   }
 
   arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-  log_info("Total execution time: %ld ns", hrtime() - start);
+  log_info("Total execution time: %llu ns", hrtime() - start);
+  memory_end = memory_usage();
+  log_info(
+      "Memory usage: %llu Bytes (%lf MiB) (Grew by %llu Bytes (%lf MiB))", 
+      memory_end, 
+      memory_end / MIBI_BYTE, 
+      memory_end - memory, 
+      (memory_end - memory) / MIBI_BYTE
+  );
   return status;
 }

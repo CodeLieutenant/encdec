@@ -18,6 +18,10 @@ extern "C"
 #define ENCDEC_PLATFORM_LINUX 1
 #endif
 
+#ifdef _MSC_VER
+#define stricmp _stricmp
+#endif
+#define MIBI_BYTE (double)1048576
 
 #define FILE_SALT_BYTES_START 0
 #define FILE_SALT_BYTES_LENGTH crypto_pwhash_SALTBYTES
@@ -59,7 +63,6 @@ extern "C"
   int32_t password_derivation(byte* out,
                               byte* out_salt,
                               const char* const password);
-  void basename(char* out, uint32_t out_len, const char* const path);
 
 #ifndef _MSC_VER
   int32_t stricmp(const char* p1, const char* p2);

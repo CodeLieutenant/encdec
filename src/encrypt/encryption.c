@@ -31,9 +31,11 @@ encrypt(const char* input_files[],
         const char* const password)
 {
   int32_t status = 0;
-  uint64_t start, diff, sum = 0;
+  uint64_t start, diff, sum = 0, memory_start, memory_diff, memory_sum = 0;
+  uint64_t memory_avg = 0;
 
   for (int32_t i = 0; i < input_files_len; i++) {
+    memory_start = memory_usage();
     start = hrtime();
     status = encrypt_file_password(input_files[i], output_files[i], password);
     if (0 != status) {
@@ -41,11 +43,15 @@ encrypt(const char* input_files[],
       return status;
     }
     diff = hrtime() - start;
-    log_info("Encrypting file: %s took %ld ns", input_files[i], diff);
+    log_info("Encrypting file: %s took %llu ns and %llu Bytes", input_files[i], diff, memory_usage());
     sum += diff;
+    memory_sum += memory_usage();
   }
 
-  log_info("Average encryption time: %ld ns", sum / (uint64_t)input_files_len);
+  log_info("Average encryption time: %llu ns", sum / (uint64_t)input_files_len);
+  memory_avg = memory_sum / input_files_len;
+  log_info("Average memory usage for encryption: %llu Bytes (%lf MiB)", memory_avg, memory_avg / MIBI_BYTE);
+
 
   return status;
 }

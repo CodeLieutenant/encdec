@@ -36,7 +36,7 @@ typedef int32_t (*read_callback)(state* st,
                                  FILE* out_file,
                                  byte* buffer,
                                  byte* out,
-                                 uint32_t read,
+                                 uint64_t read,
                                  int32_t tag,
                                  int32_t is_eof);
 
@@ -45,7 +45,7 @@ encrypt(state* st,
         FILE* out_file,
         byte* buffer,
         byte* out,
-        uint32_t read,
+        uint64_t read,
         int32_t tag,
         int32_t is_eof)
 {
@@ -66,7 +66,7 @@ decrypt(state* st,
         FILE* out_file,
         byte* buffer,
         byte* out,
-        uint32_t read,
+        uint64_t read,
         int32_t tag,
         int32_t is_eof)
 {
@@ -103,13 +103,13 @@ init(state* st,
   int32_t status = 0;
   byte header[crypto_secretstream_xchacha20poly1305_HEADERBYTES],
     key[DERIVED_PASSPHRASE_LENGTH];
-  *in_file = fopen(file, "r+");
+  *in_file = fopen(file, "rb+");
   if (!*in_file) {
     log_debug("Error while opening: %s", file);
     return ERROR_FILE_OPEN;
   }
 
-  *out_file_p = fopen(out_file, "w+");
+  *out_file_p = fopen(out_file, "wb+");
   if (!*out_file_p) {
     log_debug("Error while opening: %s", out_file);
     return ERROR_FILE_OPEN;
@@ -148,6 +148,9 @@ encrypt_file_password(const char* const file,
   state st;
   byte salt[FILE_SALT_BYTES_LENGTH], buffer[READ_BUFFER_SIZE],
     enc[ENCRYPTED_LENGTH_BUFFER];
+  memset(buffer, 0, sizeof(buffer));
+  memset(enc, 0, sizeof(enc));
+
   generate_salt(salt);
   status = init(&st, &in_file, &out_file_p, salt, passphrase, file, out_file);
 
@@ -159,7 +162,7 @@ encrypt_file_password(const char* const file,
   int32_t is_eof = 0, tag = 0;
   int64_t enc_len = 0;
   do {
-    read = fread(&buffer, sizeof(byte), READ_BUFFER_SIZE, in_file);
+    read = fread(buffer, sizeof(byte), READ_BUFFER_SIZE, in_file);
     is_eof = feof(in_file);
     tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;
     status = encrypt(&st, out_file_p, buffer, enc, read, tag, is_eof);
@@ -191,15 +194,15 @@ decrypt_file_password(const char* const file,
     dec[READ_BUFFER_SIZE],
     header[crypto_secretstream_xchacha20poly1305_HEADERBYTES],
     key[DERIVED_PASSPHRASE_LENGTH];
-  char print[READ_BUFFER_SIZE * 2 + 1];
+  char* print = malloc(READ_BUFFER_SIZE * 2 + 1);
 
-  in_file = fopen(file, "r+");
+  in_file = fopen(file, "rb+");
   if (!in_file) {
     log_debug("Error while opening: %s", file);
     return ERROR_FILE_OPEN;
   }
 
-  out_file_p = fopen(out_file, "w+");
+  out_file_p = fopen(out_file, "wb+");
   if (!out_file_p) {
     log_debug("Error while opening: %s", out_file);
     return ERROR_FILE_OPEN;
@@ -255,5 +258,6 @@ decrypt_file_password(const char* const file,
     return ERROR_XCHACHA20_INVALID_HEADER;
   }
 
+  free(print);
   return status;
 }
