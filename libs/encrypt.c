@@ -8,19 +8,28 @@
 #include "../include/encrypt.h"
 #include "../include/log.h"
 
-#define READ_FILE(read_len, out_len, cb)                                       \
-  size_t read;                                                                 \
-  int32_t is_eof = 0, tag = 0;                                                 \
-  int64_t enc_len = 0;                                                         \
-  do {                                                                         \
-    read = fread(&buffer, sizeof(byte), read_len, in_file);                    \
-    is_eof = feof(in_file);                                                    \
-    tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;        \
-    status = cb(&st, out_file_p, buffer, enc, read, tag, is_eof);              \
-    if (status != 0) {                                                         \
-      return status;                                                           \
-    }                                                                          \
-  } while (!is_eof);
+// void
+// pr(byte* buffer, int32_t len, int32_t outlen)
+// {
+//   char* out[outlen];
+
+//   bin2hex(out, outlen, buffer, len);
+// }
+
+// #define READ_FILE(read_len, out_len, cb, o)                                    \
+//   output print_out = o;                                                        \
+//   size_t read;                                                                 \
+//   int32_t is_eof = 0, tag = 0;                                                 \
+//   int64_t enc_len = 0;                                                         \
+//   do {                                                                         \
+//     read = fread(&buffer, sizeof(byte), read_len, in_file);                    \
+//     is_eof = feof(in_file);                                                    \
+//     tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;        \
+//     status = cb(&st, out_file_p, buffer, enc, read, tag, is_eof);              \
+//     if (status != 0) {                                                         \
+//       return status;                                                           \
+//     }                                                                          \
+//   } while (!is_eof);
 
 typedef crypto_secretstream_xchacha20poly1305_state state;
 typedef int32_t (*read_callback)(state* st,
@@ -146,7 +155,18 @@ encrypt_file_password(const char* const file,
     return status;
   }
 
-  READ_FILE(READ_BUFFER_SIZE, ENCRYPTED_LENGTH_BUFFER, encrypt);
+  size_t read;
+  int32_t is_eof = 0, tag = 0;
+  int64_t enc_len = 0;
+  do {
+    read = fread(&buffer, sizeof(byte), READ_BUFFER_SIZE, in_file);
+    is_eof = feof(in_file);
+    tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;
+    status = encrypt(&st, out_file_p, buffer, enc, read, tag, is_eof);
+    if (status != 0) {
+      return status;
+    }
+  } while (!is_eof);
 
   if (0 != status) {
     return ERROR_XCHACHA20_ENCRYPTION;
@@ -159,17 +179,19 @@ encrypt_file_password(const char* const file,
 }
 
 int32_t
-decrytpt_file_password(const char* const file,
-                       const char* const out_file,
-                       const char* const passphrase)
+decrypt_file_password(const char* const file,
+                      const char* const out_file,
+                      const char* const passphrase,
+                      output o)
 {
   FILE *in_file = NULL, *out_file_p = NULL;
   int32_t status = 0;
   state st;
   byte salt[FILE_SALT_BYTES_LENGTH], buffer[ENCRYPTED_LENGTH_BUFFER],
-    enc[READ_BUFFER_SIZE],
+    dec[READ_BUFFER_SIZE],
     header[crypto_secretstream_xchacha20poly1305_HEADERBYTES],
     key[DERIVED_PASSPHRASE_LENGTH];
+  char print[READ_BUFFER_SIZE * 2 + 1];
 
   in_file = fopen(file, "r+");
   if (!in_file) {
@@ -204,7 +226,29 @@ decrytpt_file_password(const char* const file,
     return ERROR_XCHACHA20_INVALID_HEADER;
   }
 
-  READ_FILE(ENCRYPTED_LENGTH_BUFFER, READ_BUFFER_SIZE, decrypt);
+  output print_out = o;
+  size_t read;
+  int32_t is_eof = 0, tag = 0;
+  int64_t enc_len = 0;
+  do {
+    read = fread(&buffer, sizeof(byte), ENCRYPTED_LENGTH_BUFFER, in_file);
+    is_eof = feof(in_file);
+    tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;
+    status = decrypt(&st, out_file_p, buffer, dec, read, tag, is_eof);
+    if (status != 0) {
+      return status;
+    }
+    if (o & HEX) {
+      memset(print, 0, sizeof(print));
+      bin2hex(print, sizeof(print), dec, read);
+      hexdump(stdout, print);
+    }
+
+    if (o & ASCII) {
+      printf("%s", dec);
+    }
+
+  } while (!is_eof);
 
   if (0 != status) {
     log_debug("Error while decrypting");

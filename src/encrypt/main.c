@@ -8,13 +8,14 @@
 
 #include <argtable3.h>
 
-#include "encrypt.h"
+#include "encryption.h"
+#include "decryption.h"
 
 #define NAME "encdec"
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 0
 
-struct arg_lit *help, *version;
+struct arg_lit *help, *version, *hex, *ascii;
 struct arg_file *o, *file;
 struct arg_str *type, *log_level, *password;
 struct arg_end* end;
@@ -75,6 +76,8 @@ main(int32_t argc, char* argv[])
   void* argtable[] = {
     help = arg_litn("h", "help", 0, 1, "display this help and exit"),
     version = arg_litn("v", "version", 0, 1, "display version info and exit"),
+    hex = arg_litn(NULL, "dump", 0, 1, "Dump decrypted file as hex"),
+    ascii = arg_litn(NULL, "print", 0, 1, "Dump decrypted file as ascii text"),
     type = arg_str1(NULL, NULL, "<str>", "Encrypt or Decrypt"),
     password =
       arg_str1("p", "password", "<password>", "Password to encrypt all files"),
@@ -123,6 +126,7 @@ main(int32_t argc, char* argv[])
       encrypt(file->filename, file->count, o->filename, password->sval[0]);
     log_debug("Encryption of file completed");
   } else if (stricmp(type->sval[0], "decrypt") == 0) {
+    output output = NONE;
     if (file->count != o->count) {
       log_error("Number of input files has to be same as number of output "
                 "files, %d - %d",
@@ -132,8 +136,17 @@ main(int32_t argc, char* argv[])
       goto exit;
     }
     log_debug("Starting the file decryption");
-  } else if (stricmp(type->sval[0], "decrypt-print") == 0) {
-    printf("Decrypt And Print\n");
+
+    if (ascii->count) {
+      output |= ASCII;
+    }
+
+    if (hex->count) {
+      output |= HEX;
+    }
+
+    decrypt(
+      file->filename, file->count, o->filename, password->sval[0], output);
   } else if (stricmp(type->sval[0], "hexdump") == 0) {
     printf("HexDUMP file\n");
   }
