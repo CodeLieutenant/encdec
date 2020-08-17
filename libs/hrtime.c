@@ -34,3 +34,9 @@ hrtime()
 #endif
   return 0;
 }
+
+uint64_t
+memory_usage()
+{
+  return 0;
+}

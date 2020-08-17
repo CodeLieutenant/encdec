@@ -10,9 +10,13 @@ extern "C"
 {
 #endif
 #define ENCDEC_ENCRYPT
-  int32_t encrypt_file_password(const char const* file,
-                                const char const* out_file,
-                                const char const* passphrase);
+  int32_t encrypt_file_password(const char* const file,
+                                const char* const out_file,
+                                const char* const passphrase);
+
+  int32_t decrytpt_file_password(const char* const file,
+                                 const char* const out_file,
+                                 const char* const passphrase);
 
 #ifdef __cplusplus
 }

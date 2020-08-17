@@ -8,7 +8,7 @@
 static char hexconvtab[] = "0123456789abcdef";
 
 int32_t
-bin2hex(char* dst, uint32_t dst_len, const byte const* src, uint32_t src_len)
+bin2hex(char* dst, uint32_t dst_len, const byte* const src, uint32_t src_len)
 {
   int32_t i, j;
 
@@ -26,7 +26,7 @@ bin2hex(char* dst, uint32_t dst_len, const byte const* src, uint32_t src_len)
 }
 
 int32_t
-hex2bin(char* dst, uint32_t dst_len, const byte const* src, uint32_t src_len)
+hex2bin(char* dst, uint32_t dst_len, const byte* const src, uint32_t src_len)
 {
   int32_t target_length = HEX2BIN_OUTPUT_BUFFER_LENGTH(src_len);
   int32_t i = 0, j = 0;

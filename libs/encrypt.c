@@ -6,7 +6,6 @@
 
 #include "../include/common.h"
 #include "../include/encrypt.h"
-#define LOG_USE_COLORS
 #include "../include/log.h"
 
 #define READ_FILE(read_len, out_len, cb)                                       \
@@ -19,7 +18,7 @@
     read = fread(&buffer, sizeof(byte), read_len, in_file);                    \
     is_eof = feof(in_file);                                                    \
     tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;        \
-    status = cb(&st, out_file_p, buffer, enc, read, tag);                      \
+    status = cb(&st, out_file_p, buffer, enc, read, tag, is_eof);              \
     if (status != 0) {                                                         \
       return status;                                                           \
     }                                                                          \
@@ -31,7 +30,8 @@ typedef int32_t (*read_callback)(state* st,
                                  byte* buffer,
                                  byte* out,
                                  uint32_t read,
-                                 int32_t tag);
+                                 int32_t tag,
+                                 int32_t is_eof);
 
 static int32_t
 encrypt(state* st,
@@ -39,7 +39,8 @@ encrypt(state* st,
         byte* buffer,
         byte* out,
         uint32_t read,
-        int32_t tag)
+        int32_t tag,
+        int32_t is_eof)
 {
   int32_t status = 0;
   unsigned long long out_len;
@@ -48,6 +49,33 @@ encrypt(state* st,
   if (0 != status) {
     return ERROR_XCHACHA20_ENCRYPTION;
   }
+  fwrite(out, sizeof(byte), (size_t)out_len, out_file);
+
+  return status;
+}
+
+static int32_t
+decrypt(state* st,
+        FILE* out_file,
+        byte* buffer,
+        byte* out,
+        uint32_t read,
+        int32_t tag,
+        int32_t is_eof)
+{
+  int32_t status = 0;
+  uint8_t t;
+  unsigned long long out_len;
+  status = crypto_secretstream_xchacha20poly1305_pull(
+    st, out, &out_len, &t, out, read, NULL, 0);
+  if (0 != status) {
+    return ERROR_XCHACHA20_ENCRYPTION;
+  }
+
+  if (t == crypto_secretstream_xchacha20poly1305_TAG_FINAL && !is_eof) {
+    return ERROR_PREMATURE_ENDING;
+  }
+
   fwrite(out, sizeof(byte), (size_t)out_len, out_file);
 
   return status;
@@ -100,9 +128,9 @@ init(state* st,
 }
 
 int32_t
-encrypt_file_password(const char const* file,
-                      const char const* out_file,
-                      const char const* passphrase)
+encrypt_file_password(const char* const file,
+                      const char* const out_file,
+                      const char* const passphrase)
 {
   FILE *in_file = NULL, *out_file_p = NULL;
   int32_t status = 0;
@@ -126,4 +154,60 @@ encrypt_file_password(const char const* file,
   fclose(in_file);
   fclose(out_file_p);
   return ENCDEC_SUCCESS;
+}
+
+int32_t
+decrytpt_file_password(const char* const file,
+                       const char* const out_file,
+                       const char* const passphrase)
+{
+  FILE *in_file = NULL, *out_file_p = NULL;
+  int32_t status = 0;
+  state st;
+  byte salt[FILE_SALT_BYTES_LENGTH], buffer[ENCRYPTED_LENGTH_BUFFER],
+    enc[READ_BUFFER_SIZE],
+    header[crypto_secretstream_xchacha20poly1305_HEADERBYTES],
+    key[DERIVED_PASSPHRASE_LENGTH];
+
+  in_file = fopen(file, "r+");
+  if (!in_file) {
+    log_debug("Error while opening: %s", file);
+    return ERROR_FILE_OPEN;
+  }
+
+  out_file_p = fopen(out_file, "w+");
+  if (!out_file_p) {
+    log_debug("Error while opening: %s", out_file);
+    return ERROR_FILE_OPEN;
+  }
+
+  fread(salt, sizeof(byte), sizeof(salt), in_file);
+  fread(header, sizeof(byte), sizeof(header), in_file);
+
+  status = sodium_init();
+  if (0 != status) {
+    log_debug("Error while setting up libsodium");
+    return status;
+  }
+
+  status = password_derivation(key, salt, passphrase);
+  if (0 != status) {
+    log_debug("Error while generating key, %s");
+    return ERROR_PASSWORD_DERIVATION_FAILED;
+  }
+  status = crypto_secretstream_xchacha20poly1305_init_pull(&st, header, key);
+
+  if (0 != status) {
+    log_debug("Error while initializing xchacha state");
+    return ERROR_XCHACHA20_INVALID_HEADER;
+  }
+
+  READ_FILE(ENCRYPTED_LENGTH_BUFFER, READ_BUFFER_SIZE, decrypt);
+
+  if (0 != status) {
+    log_debug("Error while decrypting");
+    return ERROR_XCHACHA20_INVALID_HEADER;
+  }
+
+  return status;
 }

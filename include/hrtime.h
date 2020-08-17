@@ -16,6 +16,7 @@ extern "C"
    */
   uint64_t hrtime();
 
+  uint64_t memory_usage();
 #ifdef __cplusplus
 }
 #endif

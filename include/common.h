@@ -33,6 +33,7 @@ extern "C"
 #define ERROR_PASSWORD_DERIVATION_MEM_FAILED -3
 #define ERROR_XCHACHA20_INVALID_HEADER -4
 #define ERROR_XCHACHA20_ENCRYPTION -5
+#define ERROR_PREMATURE_ENDING -6
 
 #define HEX2BIN_OUTPUT_BUFFER_LENGTH(n) ((n - 1) >> 1)
 #define BIN2HEX_OUTPUT_BUFFER_LENGTH(n) (n << 1) + 1
@@ -40,22 +41,22 @@ extern "C"
 
   int32_t bin2hex(char* dst,
                   uint32_t dst_len,
-                  const byte const* src,
+                  const byte* const src,
                   uint32_t src_len);
 
   int32_t hex2bin(char* dst,
                   uint32_t dst_len,
-                  const byte const* src,
+                  const byte* const src,
                   uint32_t src_len);
 
-  int32_t hexdump(FILE* output, const char const* hex);
+  int32_t hexdump(FILE* output, const char* const hex);
 
   int32_t generate_salt(byte* out_salt);
 
   int32_t password_derivation(byte* out,
                               byte* out_salt,
                               const char* const password);
-  void basename(char* out, uint32_t out_len, const char* path);
+  void basename(char* out, uint32_t out_len, const char* const path);
 #ifdef __cplusplus
 }
 #endif
