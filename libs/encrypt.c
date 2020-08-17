@@ -13,8 +13,6 @@
   int32_t is_eof = 0, tag = 0;                                                 \
   int64_t enc_len = 0;                                                         \
   do {                                                                         \
-    memset(buffer, 0, read_len);                                               \
-    memset(enc, 0, out_len);                                                   \
     read = fread(&buffer, sizeof(byte), read_len, in_file);                    \
     is_eof = feof(in_file);                                                    \
     tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;        \
@@ -80,7 +78,7 @@ decrypt(state* st,
   }
 
   fwrite(out, sizeof(byte), (size_t)out_len, out_file);
-
+  fflush(out_file);
   return status;
 }
 
@@ -124,12 +122,6 @@ init(state* st,
     log_debug("Error while encrypting");
     return ERROR_XCHACHA20_INVALID_HEADER;
   }
-#ifdef DEBUG
-  size_t len = sizeof(header) * 2 + 1;
-  char dest[49];
-  bin2hex(dest, len, header, sizeof(header));
-#endif
-
   // Metadata
   fwrite(salt, sizeof(char), FILE_SALT_BYTES_LENGTH, *out_file_p);
   fwrite(header, 1, sizeof header, *out_file_p);
@@ -194,11 +186,6 @@ decrytpt_file_password(const char* const file,
   fread(salt, sizeof(byte), sizeof(salt), in_file);
   fread(header, sizeof(byte), sizeof(header), in_file);
 
-#ifdef DEBUG
-  size_t len = sizeof(header) * 2 + 1;
-  char dest[49];
-  bin2hex(dest, len, header, sizeof(header));
-#endif
   status = sodium_init();
   if (-1 == status) {
     log_debug("Error while setting up libsodium");
