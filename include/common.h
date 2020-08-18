@@ -22,9 +22,9 @@ extern "C" {
   fread_s(buffer, _ElementCount, _ElementSize, _ElementCount, _Stream)
 
 #elif defined(__GCC__)
-
-#else
 #define ENCDEC_INLINE __attribute__((always_inline))
+#else
+#define ENCDEC_INLINE 
 #endif
 #define MIBI_BYTE (double)1048576
 
