@@ -41,9 +41,11 @@ extern "C"
 #define ERROR_XCHACHA20_ENCRYPTION -5
 #define ERROR_PREMATURE_ENDING -6
 #define ERROR_XCHACHA20_DECRYPTION -7
+#define ERROR_MEMORY_ALLOCATION -8
 
 #define HEX2BIN_OUTPUT_BUFFER_LENGTH(n) ((n - 1) >> 1)
 #define BIN2HEX_OUTPUT_BUFFER_LENGTH(n) (n << 1) + 1
+
   typedef uint8_t byte;
 
   int32_t bin2hex(char* dst,

@@ -5,7 +5,7 @@
 
 #include "encrypt.h"
 
-static void
+static inline void 
 handle_encryption_error(int32_t error_code)
 {
   switch (error_code) {
