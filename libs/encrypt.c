@@ -8,29 +8,6 @@
 #include "../include/encrypt.h"
 #include "../include/log.h"
 
-// void
-// pr(byte* buffer, int32_t len, int32_t outlen)
-// {
-//   char* out[outlen];
-
-//   bin2hex(out, outlen, buffer, len);
-// }
-
-// #define READ_FILE(read_len, out_len, cb, o)                                    \
-//   output print_out = o;                                                        \
-//   size_t read;                                                                 \
-//   int32_t is_eof = 0, tag = 0;                                                 \
-//   int64_t enc_len = 0;                                                         \
-//   do {                                                                         \
-//     read = fread(&buffer, sizeof(byte), read_len, in_file);                    \
-//     is_eof = feof(in_file);                                                    \
-//     tag = is_eof ? crypto_secretstream_xchacha20poly1305_TAG_FINAL : 0;        \
-//     status = cb(&st, out_file_p, buffer, enc, read, tag, is_eof);              \
-//     if (status != 0) {                                                         \
-//       return status;                                                           \
-//     }                                                                          \
-//   } while (!is_eof);
-
 typedef crypto_secretstream_xchacha20poly1305_state state;
 typedef int32_t (*read_callback)(state* st,
                                  FILE* out_file,
