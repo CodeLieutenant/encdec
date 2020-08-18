@@ -6,7 +6,7 @@
 
 #include "hrtime.h"
 
-static inline int32_t open_file(FILE **out, const char *const file,
+ENCDEC_INLINE static inline int32_t open_file(FILE **out, const char *const file,
                                 const char *const mode) {
 #ifdef _MSC_VER
   if (0 != fopen_s(out, file, mode)) {
@@ -23,7 +23,8 @@ static inline int32_t open_file(FILE **out, const char *const file,
   return ENCDEC_SUCCESS;
 }
 
-static inline int32_t output_file(FILE *file, byte *const buffer,
+ENCDEC_INLINE static inline int32_t
+output_file(FILE *file, byte *const buffer,
                                   byte *const hex, const output o) {
   int32_t eof = 0;
   do {

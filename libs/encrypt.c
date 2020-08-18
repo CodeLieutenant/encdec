@@ -25,7 +25,7 @@ typedef int32_t(*read_callback)(state* st,
 	const int32_t tag,
 	const int32_t is_eof);
 
-static inline int32_t
+ENCDEC_INLINE static inline int32_t
 open_files(
 	FILE** in_file,
 	FILE** out_file,
@@ -64,7 +64,7 @@ open_files(
 }
 
 
-static inline int32_t
+ENCDEC_INLINE static inline int32_t
 sodium_start(
 	byte* const key,
 	byte* const salt,
@@ -87,7 +87,7 @@ sodium_start(
 	return ENCDEC_SUCCESS;
 }
 
-static inline int32_t
+ENCDEC_INLINE static inline int32_t
 encrypt(
 	state* st,
 	FILE* out_file,
@@ -106,7 +106,7 @@ encrypt(
 	return ENCDEC_SUCCESS;
 }
 
-static inline int32_t
+ENCDEC_INLINE static inline int32_t
 decrypt(
 	state* st,
 	FILE* out_file,

@@ -1,5 +1,4 @@
 #include <common.h>
-#include <encrypt.h>
 #include <hrtime.h>
 #include <log.h>
 #include <stdint.h>
@@ -21,7 +20,7 @@ struct arg_file *o, *file;
 struct arg_str *type, *log_level, *password;
 struct arg_end *end;
 
-static int32_t print_usage(void **argtable) {
+ENCDEC_INLINE static inline int32_t print_usage(void **argtable) {
   printf("Usage: %s", NAME);
   arg_print_syntax(stdout, argtable, "\n");
   printf("EncDec Software.\n\n");
@@ -29,18 +28,18 @@ static int32_t print_usage(void **argtable) {
   return 0;
 }
 
-static int32_t print_version() {
+ENCDEC_INLINE static inline int32_t print_version() {
   printf("Version: %d.%d\n", VERSION_MAJOR, VERSION_MINOR);
   return 0;
 }
 
-static int32_t print_error() {
+ENCDEC_INLINE static inline int32_t print_error() {
   arg_print_errors(stdout, end, NAME);
   printf("Try '%s --help' for more information.\n", NAME);
   return 1;
 }
 
-static void set_log_level() {
+ENCDEC_INLINE static inline void set_log_level() {
   const char *log;
   if (log_level->count == 0) {
     log = "info";
@@ -124,8 +123,8 @@ int main(int32_t argc, char *argv[]) {
       status = 1;
       goto exit;
     }
-    
-  	output output = NONE;
+
+    output output = NONE;
     if (file->count != o->count) {
       log_error("Number of input files has to be same as number of output "
                 "files, %d - %d",

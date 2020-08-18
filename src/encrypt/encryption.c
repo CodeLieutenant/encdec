@@ -3,7 +3,7 @@
 #include <hrtime.h>
 #include <log.h>
 
-static inline void 
+ENCDEC_INLINE static inline void
 handle_encryption_error(const int32_t error_code)
 {
   switch (error_code) {

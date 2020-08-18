@@ -17,8 +17,7 @@
 
 #define NANO_IN_SEC 1000000000
 
-uint64_t
-hrtime()
+uint64_t hrtime()
 {
 
 #ifdef ENCDEC_PLATFORM_WINDOWS
