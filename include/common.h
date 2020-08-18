@@ -16,16 +16,18 @@ extern "C" {
 #endif
 
 #ifdef _MSC_VER
+#ifdef RELEASE
 #define ENCDEC_INLINE __forceinline
+#endif
 #define stricmp _stricmp
 #define fread(buffer, _ElementSize, _ElementCount, _Stream)                    \
   fread_s(buffer, _ElementCount, _ElementSize, _ElementCount, _Stream)
-
-#elif defined(__GCC__)
+#elif defined(__GCC__) && defined(RELEASE)
 #define ENCDEC_INLINE __attribute__((always_inline))
 #else
-#define ENCDEC_INLINE 
+#define ENCDEC_INLINE
 #endif
+
 #define MIBI_BYTE (double)1048576
 
 #define FILE_SALT_BYTES_START 0
