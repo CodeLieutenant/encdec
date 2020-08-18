@@ -10,13 +10,13 @@ extern "C"
 {
 #endif
 #define ENCDEC_HRTIME
-  /**
-   * Gets current time in nanoseconds
-   * If platform is not supported 0 is returned
-   */
-  uint64_t hrtime();
+	/**
+	 * Gets current time in nanoseconds
+	 * If platform is not supported 0 is returned
+	 */
+	uint64_t hrtime();
 
-  uint64_t memory_usage();
+	uint64_t memory_usage();
 #ifdef __cplusplus
 }
 #endif
