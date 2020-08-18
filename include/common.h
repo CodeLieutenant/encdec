@@ -46,6 +46,8 @@ extern "C"
 
 typedef uint8_t byte;
 
+typedef enum { NONE = 0, ASCII = 1, HEX = 1 << 2 } output;
+
   int32_t bin2hex(char* const dst,
                   const uint32_t dst_len,
                   const byte* const src,
